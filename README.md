@@ -4,9 +4,9 @@
 [![Technical debt ratio][technical-debt-ratio-badge]][technical-debt-ratio-badge-url] 
 [![Coverage][coverage-badge]][coverage-badge-url] 
 
-Introscope (CA APM) JAXRS and Spring REST Java Agent Extension
+Introscope (CA APM) JAX-RS and Spring REST Java Agent Extension
 ===================================================================
-The `rest.pbd` and `Rest.jar` are used to instrument **Spring** and **JAXRS** REST web services in **Introscope**.
+The `rest.pbd` and `Rest.jar` are used to instrument **Spring** and **JAX-RS** REST web services in **Introscope**.
 The `rest-client.pbd `is used for instrumenting Spring REST client to generate backend metrics and triage map.
 
 ## Deployment
