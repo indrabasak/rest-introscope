@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Created-By: Indra Basak
+Build-Time: ${build.time}
+com-wily-Extension-Name: Indra REST Extensions
+com-wily-Extension-Type: Introscope-Agent
+com-wily-Extension-Version: 1
+com-wily-Extension-Plugins-List: springrest, jaxrs
+com-wily-Extension-Plugin-springrest-Name: Spring REST Formatter 
+com-wily-Extension-Plugin-springrest-Type: nameformatter
+com-wily-Extension-Plugin-springrest-Version: 1
+com-wily-Extension-Plugin-springrest-Entry-Point-Class: com.basaki.agent.SpringRestNameFormatter
+com-wily-Extension-Plugin-jaxrs-Name: JAXRS REST Formatter 
+com-wily-Extension-Plugin-jaxrs-Type: nameformatter
+com-wily-Extension-Plugin-jaxrs-Version: 1
+com-wily-Extension-Plugin-jaxrs-Entry-Point-Class: com.basaki.agent.JaxrsNameFormatter

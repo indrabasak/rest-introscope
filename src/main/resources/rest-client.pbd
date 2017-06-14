@@ -1,0 +1,36 @@
+#############################################################
+# Directives for identifying Spring REST web service client 
+# as back end calls.
+#############################################################
+SetFlag: SpringRestBackendFlag
+TurnOn: SpringRestBackendFlag
+
+IdentifyClassAs: org.springframework.web.client.RestTemplate SpringRestBackendFlag
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag getForEntity BackendMarker "REST GET call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag getForObject BackendMarker "REST GET call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag postForEntity BackendMarker "REST POST call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag postForObject BackendMarker "REST POST call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag put BackendMarker "REST PUT call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag delete BackendMarker "REST DELETE call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag headForHeaders BackendMarker "REST HEAD call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag exchange BackendMarker "REST call at {0}"
+
+SetTracerClassMapping: AppMapSpringRestBackendMarker com.wily.introscope.appmap.agent.trace.hc2.AppMapMarkerTracer com.wily.introscope.probebuilder.validate.ResourceNameValidator
+SetTracerParameter: AppMapSpringRestBackendMarker nodeType GenericBackend
+SetTracerParameter: AppMapSpringRestBackendMarker nodeLevel MethodClass
+SetTracerParameter: AppMapSpringRestBackendMarker ownerType Application,BusinessTransactionComponent
+SetTracerParameter: AppMapSpringRestBackendMarker boundaryType Backend
+SetTracerParameter: AppMapSpringRestBackendMarker isCrossProcess true
+SetTracerParameter: AppMapSpringRestBackendMarker useblame false
+#SetTracerParameter: AppMapSpringRestBackendMarker newmode true
+SetTracerOrdering: AppMapSpringRestBackendMarker -1000001
+
+# And backend node:
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag getForEntity AppMapSpringRestBackendMarker "REST GET call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag getForObject AppMapSpringRestBackendMarker "REST GET call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag postForEntity AppMapSpringRestBackendMarker "REST POST call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag postForObject AppMapSpringRestBackendMarker "REST POST call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag put AppMapSpringRestBackendMarker"REST PUT call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag delete AppMapSpringRestBackendMarker "REST DELETE call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag headForHeaders AppMapSpringRestBackendMarker "REST HEAD call at {0}"
+TraceOneMethodWithParametersIfFlagged: SpringRestBackendFlag exchange AppMapSpringRestBackendMarker "REST call at {0}"

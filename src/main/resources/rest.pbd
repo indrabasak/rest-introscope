@@ -1,0 +1,36 @@
+#############################################################
+# This file is used to enable the Spring REST web service
+# metrics.
+#############################################################
+# Spring REST Annotations Blamepoint Tracer
+SetTracerClassMapping: SpringRestBlamePointTracer com.wily.introscope.agent.trace.hc2.BlamePointTracer com.wily.introscope.probebuilder.validate.ResourceNameValidator
+SetTracerParameter: SpringRestBlamePointTracer nameformatter com.basaki.agent.SpringRestNameFormatter
+SetTracerParameter: SpringRestBlamePointTracer reentrancy instance
+SetTracerOrdering: SpringRestBlamePointTracer -99000
+
+SetFlag: SpringRestFlag
+TurnOn: SpringRestFlag
+
+IdentifyAnnotatedClassAs: org.springframework.stereotype.Controller SpringRestFlag
+TraceAnnotatedMethodsIfFlagged: SpringRestFlag org.springframework.web.bind.annotation.RequestMapping SpringRestBlamePointTracer "REST|Spring|{path}|{op}|{classname}|{method}"
+
+#############################################################
+# This file is used to enable the JAXRS REST web service
+# metrics.
+#############################################################
+# JAXRS REST Annotations Blamepoint Tracer
+SetTracerClassMapping: JaxrsBlamePointTracer com.wily.introscope.agent.trace.hc2.BlamePointTracer com.wily.introscope.probebuilder.validate.ResourceNameValidator
+SetTracerParameter: JaxrsBlamePointTracer nameformatter com.basaki.agent.JaxrsNameFormatter
+SetTracerParameter: JaxrsBlamePointTracer reentrancy instance
+SetTracerOrdering: JaxrsBlamePointTracer -99001
+
+SetFlag: JaxrsFlag
+TurnOn: JaxrsFlag
+
+IdentifyAnnotatedClassAs: javax.ws.rs.Path JaxrsFlag
+TraceAnnotatedMethodsIfFlagged: JaxrsFlag javax.ws.rs.GET JaxrsBlamePointTracer "REST|JAXRS|{path}|GET|{classname}|{method}"
+TraceAnnotatedMethodsIfFlagged: JaxrsFlag javax.ws.rs.POST JaxrsBlamePointTracer "REST|JAXRS|{path}|POST|{classname}|{method}"
+TraceAnnotatedMethodsIfFlagged: JaxrsFlag javax.ws.rs.PUT JaxrsBlamePointTracer "REST|JAXRS|{path}|PUT|{classname}|{method}"
+TraceAnnotatedMethodsIfFlagged: JaxrsFlag javax.ws.rs.DELETE JaxrsBlamePointTracer "REST|JAXRS|{path}|DELETE|{classname}|{method}"
+TraceAnnotatedMethodsIfFlagged: JaxrsFlag javax.ws.rs.HEAD JaxrsBlamePointTracer "REST|JAXRS|{path}|HEAD|{classname}|{method}"
+ 
