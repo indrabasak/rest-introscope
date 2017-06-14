@@ -65,12 +65,15 @@ import com.wily.util.feedback.IModuleFeedbackChannel;
  * @author Indra Basak
  * @since Oct, 2014
  */
+@SuppressWarnings({"squid:S1226"})
 public class JaxrsNameFormatter implements INameFormatter {
 
-    public static final String kPathNameHolder = "{path}";
-    public static final String kPathAnnotation = "javax.ws.rs.Path";
+    public static final String PATH_NAME_HOLDER = "{path}";
+
+    public static final String PATH_ANNOTATION = "javax.ws.rs.Path";
 
     private IAgent fAgent;
+
     private IModuleFeedbackChannel fFeedback;
 
     /**
@@ -104,17 +107,16 @@ public class JaxrsNameFormatter implements INameFormatter {
         fFeedback.info("Invocation object " + invocationClass.getName());
 
         String annoStr = ParserHelper.findClassAnnotation(invocationClass,
-                kPathAnnotation);
+                PATH_ANNOTATION);
         if (annoStr != null) {
             fFeedback.debug("INameFormatter_format cntrl req map: " + annoStr);
-            // TODO
             // do something about clazz path
             clazzPath = annoStr;
         }
 
         methodPath = findMethodPath(data);
         String path = getPath(appName, clazzPath, methodPath);
-        name = StringUtils.replace(name, kPathNameHolder, path);
+        name = StringUtils.replace(name, PATH_NAME_HOLDER, path);
 
         return name;
     }
@@ -132,18 +134,19 @@ public class JaxrsNameFormatter implements INameFormatter {
 
         String methodName = data.getProbeInformation().getProbeIdentification()
                 .getProbeMethodName();
-        // fFeedback.info("findOperation - method name: " + methodName);
+        fFeedback.debug("findOperation - method name: " + methodName);
+
         String methodDesc = data.getProbeInformation().getProbeIdentification()
                 .getProbeMethodDescriptor();
-        // fFeedback.info("findOperation - method desc: " + methodDesc);
+        fFeedback.debug("findOperation - method desc: " + methodDesc);
 
         String annoStr =
                 ParserHelper.findMethodAnnotation(invocationObj.getClass(),
-                        methodName, methodDesc, kPathAnnotation);
+                        methodName, methodDesc, PATH_ANNOTATION);
 
         if (annoStr != null) {
-            fFeedback.info("findOperation - 3" + annoStr);
-            // TOD0 parse path anno
+            fFeedback.info("findOperation - annotation: " + annoStr);
+            // may be parse path anno
             path = annoStr;
         }
 
@@ -184,7 +187,7 @@ public class JaxrsNameFormatter implements INameFormatter {
             path += "|" + cntrlMthdPath;
         } else if (path == null && cntrlMthdPath != null) {
             path = cntrlMthdPath;
-        } else if (path == null && cntrlMthdPath == null) {
+        } else {
             path = "nopath";
         }
 

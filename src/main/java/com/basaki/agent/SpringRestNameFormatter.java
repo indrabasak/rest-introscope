@@ -61,14 +61,18 @@ import com.wily.util.feedback.IModuleFeedbackChannel;
  * @author Indra Basak
  * @since Oct, 2014
  */
+@SuppressWarnings({"squid:S1226"})
 public class SpringRestNameFormatter implements INameFormatter {
 
-    public static final String kPathNameHolder = "{path}";
-    public static final String kOpNameHolder = "{op}";
-    public static final String kRequestMappingAnnotation =
+    public static final String PATH_NAME_HOLDER = "{path}";
+
+    public static final String OP_NAME_HOLDER = "{op}";
+
+    public static final String REQUEST_MAPPING_ANNOTATION =
             "org.springframework.web.bind.annotation.RequestMapping";
 
     private IAgent fAgent;
+
     private IModuleFeedbackChannel fFeedback;
 
     /**
@@ -101,7 +105,7 @@ public class SpringRestNameFormatter implements INameFormatter {
         fFeedback.info("Invocation object " + invocationClass.getName());
 
         String annoStr = ParserHelper.findClassAnnotation(invocationClass,
-                kRequestMappingAnnotation);
+                REQUEST_MAPPING_ANNOTATION);
         if (annoStr != null) {
             fFeedback.info("INameFormatter_format cntrl req map: " + annoStr);
             cntrlParams = ParserHelper.parseRequestMapping(annoStr);
@@ -110,14 +114,14 @@ public class SpringRestNameFormatter implements INameFormatter {
         methodParams = findMethodParams(data);
 
         String path = getPath(appName, cntrlParams, methodParams);
-        name = StringUtils.replace(name, kPathNameHolder, path);
+        name = StringUtils.replace(name, PATH_NAME_HOLDER, path);
 
         String op = "noop";
         if (methodParams != null && methodParams.getMethod() != null) {
             op = methodParams.getMethod();
         }
 
-        name = StringUtils.replace(name, kOpNameHolder, op);
+        name = StringUtils.replace(name, OP_NAME_HOLDER, op);
 
         return name;
     }
@@ -141,7 +145,7 @@ public class SpringRestNameFormatter implements INameFormatter {
 
         String annoStr =
                 ParserHelper.findMethodAnnotation(invocationObj.getClass(),
-                        methodName, methodDesc, kRequestMappingAnnotation);
+                        methodName, methodDesc, REQUEST_MAPPING_ANNOTATION);
         if (annoStr != null) {
             params = ParserHelper.parseRequestMapping(annoStr);
         }
@@ -185,7 +189,7 @@ public class SpringRestNameFormatter implements INameFormatter {
             path += "|" + cntrlMthdPath;
         } else if (path == null && cntrlMthdPath != null) {
             path = cntrlMthdPath;
-        } else if (path == null && cntrlMthdPath == null) {
+        } else {
             path = "nopath";
         }
 

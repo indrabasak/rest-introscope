@@ -150,11 +150,21 @@ public class ParserHelper {
         RequestMappingParams params = ParserHelper
                 .parseRequestMapping(
                         "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[/customers], produces=[], method=[], params=[], consumes=[])");
-        System.out.println(params.getValue());
+
+        if (params != null) {
+            System.out.println(params.getValue());
+        } else {
+            System.out.println("null params");
+        }
 
         params = ParserHelper
                 .parseRequestMapping(
                         "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[], produces=[application/xml, application/json], method=[GET], params=[], consumes=[])");
-        System.out.println(params.getMethod());
+
+        if (params != null) {
+            System.out.println(params.getMethod());
+        } else {
+            System.out.println("null params");
+        }
     }
 }
