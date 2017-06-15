@@ -65,7 +65,7 @@ import com.wily.util.feedback.IModuleFeedbackChannel;
  * @author Indra Basak
  * @since Oct, 2014
  */
-@SuppressWarnings({"squid:S1226"})
+@SuppressWarnings({"squid:S1226", "squid:S2259"})
 public class JaxrsNameFormatter implements INameFormatter {
 
     public static final String PATH_NAME_HOLDER = "{path}";
@@ -201,12 +201,10 @@ public class JaxrsNameFormatter implements INameFormatter {
 
     private String getPathValue(String pathAnno) {
         String value = pathAnno;
-        if (pathAnno != null) {
-            if (pathAnno.startsWith("@" + PATH_ANNOTATION)) {
-                value = pathAnno.substring(pathAnno.indexOf("=") + 1);
-                if (value != null && value.endsWith(")")) {
-                    value = value.substring(0, value.length() - 1);
-                }
+        if (pathAnno != null && pathAnno.startsWith("@" + PATH_ANNOTATION)) {
+            value = pathAnno.substring(pathAnno.indexOf('=') + 1);
+            if (value != null && value.endsWith(")")) {
+                value = value.substring(0, value.length() - 1);
             }
         }
 
