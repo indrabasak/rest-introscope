@@ -173,12 +173,13 @@ public class JaxrsNameFormatter implements INameFormatter {
 
         String cntrlMthdPath = null;
         if (clazzPath != null) {
-            cntrlMthdPath = clazzPath;
+            cntrlMthdPath = getPathValue(clazzPath);
         }
 
         if (methodPath != null) {
-            String suffix = methodPath.startsWith("/") ? methodPath
-                    : ("/" + methodPath);
+            String mpath = getPathValue(methodPath);
+            String suffix = mpath.startsWith("/") ? mpath
+                    : ("/" + mpath);
             cntrlMthdPath = (cntrlMthdPath != null) ? (cntrlMthdPath + suffix)
                     : suffix;
         }
@@ -196,5 +197,19 @@ public class JaxrsNameFormatter implements INameFormatter {
         }
 
         return path;
+    }
+
+    private String getPathValue(String pathAnno) {
+        String value = pathAnno;
+        if (pathAnno != null) {
+            if (pathAnno.startsWith("@" + PATH_ANNOTATION)) {
+                value = pathAnno.substring(pathAnno.indexOf("=") + 1);
+                if (value != null && value.endsWith(")")) {
+                    value = value.substring(0, value.length() - 1);
+                }
+            }
+        }
+
+        return value;
     }
 }

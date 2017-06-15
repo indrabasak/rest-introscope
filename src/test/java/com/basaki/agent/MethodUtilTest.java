@@ -1,5 +1,3 @@
-package com.basaki.agent;
-
 /**
  * Copyright [2017] [Indra Basak]
  * <p>
@@ -14,6 +12,9 @@ package com.basaki.agent;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+
+package com.basaki.agent;
+
 
 import java.lang.reflect.Method;
 import org.junit.Test;
