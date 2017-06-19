@@ -27,8 +27,12 @@ import java.lang.reflect.Method;
  * @author Indra Basak
  * @since Oct, 2014
  */
-@SuppressWarnings("squid:S106")
+@SuppressWarnings({"squid:S106"})
 public class ParserHelper {
+
+    private ParserHelper() {
+
+    }
 
     /**
      * Retrieves the annotation string of the a method annotation.
@@ -248,35 +252,5 @@ public class ParserHelper {
         }
 
         return returnVal;
-    }
-
-    public static void main(String[] args) {
-        RequestMappingParams params = ParserHelper
-                .parseRequestMapping(
-                        "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[/customers], produces=[], method=[], params=[], consumes=[])");
-
-        if (params != null) {
-            System.out.println(params.getValue());
-        } else {
-            System.out.println("null params");
-        }
-
-        params = ParserHelper
-                .parseRequestMapping(
-                        "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[], produces=[application/xml, application/json], method=[GET], params=[], consumes=[])");
-
-        if (params != null) {
-            System.out.println(params.getMethod());
-        } else {
-            System.out.println("null params");
-        }
-
-        RestAnnotation reqMapAnno = ParserHelper.parseAnnotation(
-                "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[], produces=[application/xml, application/json], method=[GET], params=[], consumes=[])");
-        System.out.println(reqMapAnno);
-
-        RestAnnotation cntrlrAnno = ParserHelper.parseAnnotation(
-                "@org.springframework.stereotype.Controller(value=/hello)");
-        System.out.println(cntrlrAnno);
     }
 }

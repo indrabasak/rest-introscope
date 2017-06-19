@@ -15,11 +15,6 @@
 
 package com.basaki.agent.util;
 
-import com.basaki.agent.util.IAnnotation;
-import com.basaki.agent.util.ParserHelper;
-import com.basaki.agent.util.RequestMappingParams;
-import com.basaki.agent.util.RestAnnotation;
-import com.basaki.agent.util.RestAnnotationParam;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,9 +93,27 @@ public class ParserHelperTest {
         assertEquals(2, anno.getParamKeys().length);
         List<IAnnotation> params = anno.getParam("method");
         assertEquals(1, params.size());
-        assertEquals("GET", ((RestAnnotationParam) params.get(0)).getValue());
+        RestAnnotationParam param = ((RestAnnotationParam) params.get(0));
+        assertNotNull(param);
+        assertNotNull(param.toString());
+        assertEquals("GET", param.getValue());
         params = anno.getParam("produces");
         assertEquals(2, params.size());
+    }
+
+    @Test
+    public void testParseControllerAnnotation() {
+        RestAnnotation anno = ParserHelper.parseAnnotation(
+                "@org.springframework.stereotype.Controller(value=/hello))");
+        assertNotNull(anno);
+        assertNotNull(anno.toString());
+        assertEquals("org.springframework.stereotype.Controller",
+                anno.getAnnotationClass());
+        assertEquals(1, anno.getParamKeys().length);
+        List<IAnnotation> params = anno.getParam("value");
+        assertEquals(1, params.size());
+        assertEquals("/hello",
+                ((RestAnnotationParam) params.get(0)).getValue());
     }
 
     @RunWith(value = Parameterized.class)
