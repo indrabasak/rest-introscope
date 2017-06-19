@@ -11,7 +11,8 @@
         <junit.version>4.12</junit.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <mockito.version>1.10.19</mockito.version>
-        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.reportPaths>${project.basedir}/target/jacoco.exec, ${project.basedir}/target/jacoco-it.exec</sonar.jacoco.reportPaths>
+        <sonar.junit.reportsPath>${project.basedir}/target/surefire-reports</sonar.junit.reportsPath>
     </properties>
 
     <dependencies>
@@ -186,7 +187,7 @@
                                 <goal>prepare-agent</goal>
                             </goals>
                             <configuration>
-                                <destFile>${sonar.jacoco.reportPath}</destFile>
+                                <destFile>${sonar.jacoco.reportPaths}</destFile>
                                 <propertyName>failsafe.argLine</propertyName>
                             </configuration>
                         </execution>
@@ -197,7 +198,7 @@
                                 <goal>report</goal>
                             </goals>
                             <configuration>
-                                <dataFile>${sonar.jacoco.reportPath}</dataFile>
+                                <dataFile>${sonar.jacoco.reportPaths}</dataFile>
                             </configuration>
                         </execution>
                     </executions>
@@ -236,7 +237,7 @@
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.2</version>
+                    <version>3.3.0.603</version>
                 </plugin>
             </plugins>
         </pluginManagement>
