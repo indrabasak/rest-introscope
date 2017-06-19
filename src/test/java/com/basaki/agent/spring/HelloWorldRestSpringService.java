@@ -16,22 +16,22 @@
 package com.basaki.agent.spring;
 
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * {@code HelloWorldSpringService} is an example Spring REST service.
- * class.
+ * {@code HelloWorldRestSpringService} is an example Spring REST service class
+ * with a RestController annotation
  * <p/>
  *
  * @author Indra Basak
- * @since 6/15/17
+ * @since 6/19/17
  */
-@Controller("/hello")
-public class HelloWorldSpringService {
+@RestController("/bonjour")
+public class HelloWorldRestSpringService {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{msg}",
             produces = {MediaType.APPLICATION_JSON_VALUE})

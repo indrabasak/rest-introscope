@@ -19,21 +19,20 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * {@code HelloWorldSpringService} is an example Spring REST service.
- * class.
+ * {@code HelloWorldNoopSpringService} is an example Spring REST service class
+ * with a method with no REST operation specified.
  * <p/>
  *
  * @author Indra Basak
- * @since 6/15/17
+ * @since 6/19/17
  */
-@Controller("/hello")
-public class HelloWorldSpringService {
+@Controller("/hi")
+public class HelloWorldNoopSpringService {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{msg}",
+    @RequestMapping(value = "/{msg}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public String getMessage(@PathVariable("msg") String msg) {

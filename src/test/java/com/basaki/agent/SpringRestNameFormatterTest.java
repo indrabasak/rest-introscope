@@ -16,6 +16,8 @@
 package com.basaki.agent;
 
 import com.basaki.agent.jaxrs.HelloWorldJaxrsService;
+import com.basaki.agent.spring.HelloWorldNoopSpringService;
+import com.basaki.agent.spring.HelloWorldRestSpringService;
 import com.basaki.agent.spring.HelloWorldSpringService;
 import com.wily.introscope.agent.IAgent;
 import com.wily.introscope.agent.blame.ComponentTracer;
@@ -88,20 +90,50 @@ public class SpringRestNameFormatterTest {
 
     @Test
     public void testINameFormatter_format() {
-        String metricPath =
-                formatter.INameFormatter_format("REST|Spring|{path}|{op}",
-                        getInvocationData());
-        assertEquals("REST|Spring|/hello/{msg}|GET", metricPath);
-    }
-
-    private InvocationData getInvocationData() {
-        ComponentTracer tracer =
-                new ComponentTracer(agent, BlameStackSnapshotPolicy.kFullBlame);
-
         ProbeIdentification probe =
                 new ProbeIdentification("HelloWorldSpringService", "getMessage",
                         "(Ljava/lang/String;)Ljava/lang/String;",
                         "com.basaki.agent.spring.HelloWorldSpringService");
+        String metricPath =
+                formatter.INameFormatter_format("REST|Spring|{path}|{op}",
+                        getInvocationData(probe,
+                                new HelloWorldSpringService()));
+        assertEquals("REST|Spring|/hello/{msg}|GET", metricPath);
+    }
+
+    @Test
+    public void testRestControllerINameFormatter_format() {
+        ProbeIdentification probe =
+                new ProbeIdentification("HelloWorldRestSpringService",
+                        "getMessage",
+                        "(Ljava/lang/String;)Ljava/lang/String;",
+                        "com.basaki.agent.spring.HelloWorldRestSpringService");
+        String metricPath =
+                formatter.INameFormatter_format("REST|Spring|{path}|{op}",
+                        getInvocationData(probe,
+                                new HelloWorldRestSpringService()));
+        assertEquals("REST|Spring|/bonjour/{msg}|GET", metricPath);
+    }
+
+    @Test
+    public void testNoopINameFormatter_format() {
+        ProbeIdentification probe =
+                new ProbeIdentification("HelloWorldNoopSpringService",
+                        "getMessage",
+                        "(Ljava/lang/String;)Ljava/lang/String;",
+                        "com.basaki.agent.spring.HelloWorldNoopSpringService");
+        String metricPath =
+                formatter.INameFormatter_format("REST|Spring|{path}|{op}",
+                        getInvocationData(probe,
+                                new HelloWorldNoopSpringService()));
+        System.out.println(metricPath);
+        assertEquals("REST|Spring|/hi/{msg}|noop", metricPath);
+    }
+
+    private InvocationData getInvocationData(ProbeIdentification probe,
+            Object obj) {
+        ComponentTracer tracer =
+                new ComponentTracer(agent, BlameStackSnapshotPolicy.kFullBlame);
 
         FrontendTracer frontendTracer =
                 new FrontendTracer(agent, new AttributeListing(), probe,
@@ -124,8 +156,7 @@ public class SpringRestNameFormatterTest {
                 new ProbeInformation(agent, probe, tracerFactory);
 
         InvocationData data =
-                InvocationData.debug_createInvocationData(agent, info,
-                        new HelloWorldSpringService());
+                InvocationData.debug_createInvocationData(agent, info, obj);
         data.IMethodTracer_startTrace();
         data.IMethodTracer_finishTrace();
 
