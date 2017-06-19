@@ -13,9 +13,10 @@
  * limitations under the License.
  **/
 
-package com.basaki.agent;
+package com.basaki.agent.util;
 
 
+import com.basaki.agent.util.MethodUtil;
 import java.lang.reflect.Method;
 import org.junit.Test;
 

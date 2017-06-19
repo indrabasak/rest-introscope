@@ -13,8 +13,14 @@
  * limitations under the License.
  **/
 
-package com.basaki.agent;
+package com.basaki.agent.util;
 
+import com.basaki.agent.util.IAnnotation;
+import com.basaki.agent.util.ParserHelper;
+import com.basaki.agent.util.RequestMappingParams;
+import com.basaki.agent.util.RestAnnotation;
+import com.basaki.agent.util.RestAnnotationParam;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -80,6 +86,21 @@ public class ParserHelperTest {
     public void testNullString() {
         RequestMappingParams params = ParserHelper.parseRequestMapping(null);
         assertNull(params);
+    }
+
+    @Test
+    public void testParseAnnotation() {
+        RestAnnotation anno = ParserHelper.parseAnnotation(
+                "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[], produces=[application/xml, application/json], method=[GET], params=[], consumes=[])");
+        assertNotNull(anno);
+        assertEquals("org.springframework.web.bind.annotation.RequestMapping",
+                anno.getAnnotationClass());
+        assertEquals(2, anno.getParamKeys().length);
+        List<IAnnotation> params = anno.getParam("method");
+        assertEquals(1, params.size());
+        assertEquals("GET", ((RestAnnotationParam) params.get(0)).getValue());
+        params = anno.getParam("produces");
+        assertEquals(2, params.size());
     }
 
     @RunWith(value = Parameterized.class)

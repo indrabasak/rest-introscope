@@ -25,7 +25,7 @@ Make the following changes to your Introscope agent after stopping the app/web s
 
 ## Running
 1. Start your app/web server to pick up the new changes.
-2. Exercise your Spring and JAXRS REST application to generate Introscope metrics.
+2. Exercise your Spring or JAX-RS REST application to generate Introscope metrics.
 
 [travis-badge]: https://travis-ci.org/indrabasak/rest-introscope.svg?branch=master
 [travis-badge-url]: https://travis-ci.org/indrabasak/rest-introscope

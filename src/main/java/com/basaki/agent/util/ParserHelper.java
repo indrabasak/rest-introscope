@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2017] [Indra Basak]
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ */
 
-package com.basaki.agent;
+package com.basaki.agent.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -31,9 +31,12 @@ import java.lang.reflect.Method;
 public class ParserHelper {
 
     /**
-     * @param clazz
-     * @param annoClazz
-     * @return
+     * Retrieves the annotation string of the a method annotation.
+     *
+     * @param clazz     name of the class which has the annotation
+     * @param annoClazz annotation class
+     * @return string representation of the annotation specified in the
+     * parameter
      */
     public static String findClassAnnotation(Class<?> clazz, String annoClazz) {
         String matcher = annoClazz;
@@ -54,11 +57,14 @@ public class ParserHelper {
     }
 
     /**
-     * @param clazz
-     * @param methodName
-     * @param methodDesc
-     * @param annoClazz
-     * @return
+     * Retrieves the annotation string of the a method annotation.
+     *
+     * @param clazz      name of the class which contains the method
+     * @param methodName name of the method which has the annotation
+     * @param methodDesc method descriptor
+     * @param annoClazz  annotation class
+     * @return string representation of the annotation specified in the
+     * parameter
      */
     public static String findMethodAnnotation(Class<?> clazz, String methodName,
             String methodDesc, String annoClazz) {
@@ -117,6 +123,102 @@ public class ParserHelper {
         return params;
     }
 
+    public static RestAnnotation parseAnnotation(String annoStr) {
+        RestAnnotation anno = null;
+
+        if (annoStr != null && annoStr.startsWith("@")) {
+            anno = new RestAnnotation();
+
+            char[] chars = annoStr.toCharArray();
+            int startIndex = 1;
+            int currentIndex = parseAnnotationName(chars, 1, anno);
+            if (startIndex == currentIndex) {
+                return null;
+            }
+            parseParams(chars, currentIndex, anno);
+        }
+
+        return anno;
+    }
+
+    private static int parseAnnotationName(char[] chars, int beginIndex,
+            RestAnnotation anno) {
+        int returnIndex = beginIndex;
+        StringBuilder bldr = new StringBuilder();
+        for (int i = beginIndex; i < chars.length; i++) {
+            if (chars[i] != '(') {
+                bldr.append(chars[i]);
+            } else {
+                String annotionClass = bldr.toString();
+                anno.setAnnotationClass(annotionClass);
+                returnIndex = i;
+                break;
+            }
+        }
+
+        return returnIndex;
+    }
+
+    private static int parseParams(char[] chars, int beginIndex,
+            RestAnnotation anno) {
+        int returnIndex = beginIndex;
+        StringBuilder bldr = new StringBuilder();
+        String key = null;
+        String value;
+        boolean done = false;
+        for (int i = beginIndex; i < chars.length; i++) {
+            returnIndex = i;
+            if (done) {
+                break;
+            }
+
+            switch (chars[i]) {
+                case '(':
+                case '[':
+                    //do nothing
+                    break;
+                case '=':
+                    key = bldr.toString().trim();
+                    bldr.setLength(0);
+                    break;
+                case ']':
+                    value = bldr.toString().trim();
+                    addParamValue(key, value, anno);
+                    key = null;
+                    bldr.setLength(0);
+                    break;
+                case ',':
+                    value = bldr.toString().trim();
+                    if (!value.isEmpty() && key != null) {
+                        RestAnnotationParam param = new RestAnnotationParam();
+                        param.setValue(value);
+                        anno.addParam(key, param);
+                    }
+                    bldr.setLength(0);
+                    break;
+                case ')':
+                    value = bldr.toString().trim();
+                    addParamValue(key, value, anno);
+                    done = true;
+                    break;
+                default:
+                    bldr.append(chars[i]);
+                    break;
+            }
+        }
+
+        return returnIndex;
+    }
+
+    private static void addParamValue(String key, String value,
+            RestAnnotation anno) {
+        if (key != null && !value.isEmpty()) {
+            RestAnnotationParam param = new RestAnnotationParam();
+            param.setValue(value);
+            anno.addParam(key, param);
+        }
+    }
+
     /**
      * Parses a request mapping annotation string and retrieves a parameter
      * value for an annotation parameter specified as a parameter.
@@ -133,13 +235,15 @@ public class ParserHelper {
             String param = reqMapping.substring(start);
 
             int end = param.indexOf(']');
-            param = param.substring(0, end);
-            if (param != null) {
-                param = param.trim();
-                if (param.length() == 0) {
-                    param = null;
-                }
+            if (end == -1) {
+                end = param.indexOf(')');
             }
+
+            param = param.substring(0, end);
+            if (param.isEmpty()) {
+                param = null;
+            }
+
             returnVal = param;
         }
 
@@ -166,5 +270,13 @@ public class ParserHelper {
         } else {
             System.out.println("null params");
         }
+
+        RestAnnotation reqMapAnno = ParserHelper.parseAnnotation(
+                "@org.springframework.web.bind.annotation.RequestMapping(headers=[], value=[], produces=[application/xml, application/json], method=[GET], params=[], consumes=[])");
+        System.out.println(reqMapAnno);
+
+        RestAnnotation cntrlrAnno = ParserHelper.parseAnnotation(
+                "@org.springframework.stereotype.Controller(value=/hello)");
+        System.out.println(cntrlrAnno);
     }
 }

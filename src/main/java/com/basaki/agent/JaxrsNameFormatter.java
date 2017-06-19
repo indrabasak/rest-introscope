@@ -15,20 +15,20 @@
 
 package com.basaki.agent;
 
+import com.basaki.agent.util.ParserHelper;
+import com.basaki.agent.util.RestAnnotation;
 import com.wily.introscope.agent.IAgent;
-import com.wily.introscope.agent.trace.INameFormatter;
 import com.wily.introscope.agent.trace.InvocationData;
 import com.wily.util.StringUtils;
-import com.wily.util.feedback.IModuleFeedbackChannel;
 
 /**
  * {@code JaxrsNameFormatter} is a metric name formatter for REST classes
  * marked
  * with JAXRS @Path annotation.
  * <pre>
- *  @Path("/books")
+ *  &#064;Path("/books")
  *  public class BookService {
- *      @GET
+ *      &#064;GET
  *      public Response getBook() {
  *          return Response.status(200).entity("getBook is called").build();
  *      }
@@ -66,15 +66,11 @@ import com.wily.util.feedback.IModuleFeedbackChannel;
  * @since Oct, 2014
  */
 @SuppressWarnings({"squid:S1226", "squid:S2259"})
-public class JaxrsNameFormatter implements INameFormatter {
+public class JaxrsNameFormatter extends BaseRestNameFormatter {
 
-    public static final String PATH_NAME_HOLDER = "{path}";
+    private static final String PATH_NAME_HOLDER = "{path}";
 
-    public static final String PATH_ANNOTATION = "javax.ws.rs.Path";
-
-    private IAgent fAgent;
-
-    private IModuleFeedbackChannel fFeedback;
+    private static final String PATH_ANNOTATION = "javax.ws.rs.Path";
 
     /**
      * Constructs a <code>JaxrsNameFormatter</code> which takes an agent as
@@ -83,8 +79,7 @@ public class JaxrsNameFormatter implements INameFormatter {
      * @param agent Java agent reference
      */
     public JaxrsNameFormatter(IAgent agent) {
-        fAgent = agent;
-        fFeedback = fAgent.IAgent_getModuleFeedback();
+        super(agent);
     }
 
     /**
@@ -98,116 +93,16 @@ public class JaxrsNameFormatter implements INameFormatter {
     public String INameFormatter_format(String name, InvocationData data) {
         String appName = ParserHelper.getFrontendAppName(data
                 .getFrontBoundary());
-        String clazzPath = null;
-        String methodPath = null;
+        getFeedback().debug("INameFormatter_format app name: " + appName);
 
-        fFeedback.debug("INameFormatter_format app name: " + appName);
+        String[] annotations = {PATH_ANNOTATION};
+        RestAnnotation classPathAnno = findClassAnnotation(data, annotations);
+        RestAnnotation methodPathAnno =
+                findMethodAnnotation(data, PATH_ANNOTATION);
 
-        Class<?> invocationClass = data.getInvocationObject().getClass();
-        fFeedback.info("Invocation object " + invocationClass.getName());
-
-        String annoStr = ParserHelper.findClassAnnotation(invocationClass,
-                PATH_ANNOTATION);
-        if (annoStr != null) {
-            fFeedback.debug("INameFormatter_format cntrl req map: " + annoStr);
-            // do something about clazz path
-            clazzPath = annoStr;
-        }
-
-        methodPath = findMethodPath(data);
-        String path = getPath(appName, clazzPath, methodPath);
+        String path = getPath(appName, classPathAnno, methodPathAnno);
         name = StringUtils.replace(name, PATH_NAME_HOLDER, path);
 
         return name;
-    }
-
-    /**
-     * Retrieves Spring Request Mapping annotation from the controller's invoked
-     * method
-     *
-     * @param data invocation data
-     * @return request mapping params object
-     */
-    private String findMethodPath(InvocationData data) {
-        String path = null;
-        Object invocationObj = data.getInvocationObject();
-
-        String methodName = data.getProbeInformation().getProbeIdentification()
-                .getProbeMethodName();
-        fFeedback.debug("findOperation - method name: " + methodName);
-
-        String methodDesc = data.getProbeInformation().getProbeIdentification()
-                .getProbeMethodDescriptor();
-        fFeedback.debug("findOperation - method desc: " + methodDesc);
-
-        String annoStr =
-                ParserHelper.findMethodAnnotation(invocationObj.getClass(),
-                        methodName, methodDesc, PATH_ANNOTATION);
-
-        if (annoStr != null) {
-            fFeedback.info("findOperation - annotation: " + annoStr);
-            // may be parse path anno
-            path = annoStr;
-        }
-
-        return path;
-    }
-
-    /**
-     * Creates a path name from a front end application name, controller's path
-     * annotation, and invoked method's path mapping annotation.
-     *
-     * @param appName    front end application name
-     * @param clazzPath  path specified at class level
-     * @param methodPath invoked method's request path
-     * @return valid path name if one of the parameter is not null, otherwise
-     * returns path name as 'nopath'
-     */
-    private String getPath(String appName, String clazzPath,
-            String methodPath) {
-        String path = null;
-
-        if (appName != null) {
-            path = appName;
-        }
-
-        String cntrlMthdPath = null;
-        if (clazzPath != null) {
-            cntrlMthdPath = getPathValue(clazzPath);
-        }
-
-        if (methodPath != null) {
-            String mpath = getPathValue(methodPath);
-            String suffix = mpath.startsWith("/") ? mpath
-                    : ("/" + mpath);
-            cntrlMthdPath = (cntrlMthdPath != null) ? (cntrlMthdPath + suffix)
-                    : suffix;
-        }
-
-        if (path != null && cntrlMthdPath != null) {
-            path += "|" + cntrlMthdPath;
-        } else if (path == null && cntrlMthdPath != null) {
-            path = cntrlMthdPath;
-        } else {
-            path = "nopath";
-        }
-
-        if (path != null) {
-            path = path.intern();
-        }
-
-        return path;
-    }
-
-    private String getPathValue(String pathAnno) {
-        String value = pathAnno;
-        if (pathAnno != null && pathAnno.startsWith("@" + PATH_ANNOTATION)) {
-            value = pathAnno.substring(pathAnno.indexOf('=') + 1);
-            if (value != null && value.endsWith(")")) {
-                value = value.substring(0, value.length() - 1);
-            }
-        }
-
-        return value;
     }
 }

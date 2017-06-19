@@ -13,8 +13,9 @@
  * limitations under the License.
  **/
 
-package com.basaki.agent;
+package com.basaki.agent.util;
 
+import com.basaki.agent.util.RequestMappingParams;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

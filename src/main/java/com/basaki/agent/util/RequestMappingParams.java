@@ -13,7 +13,7 @@
  * limitations under the License.
  **/
 
-package com.basaki.agent;
+package com.basaki.agent.util;
 
 /**
  * {@code RequestMappingParams} is an object representation of
@@ -25,8 +25,9 @@ package com.basaki.agent;
  */
 public class RequestMappingParams {
 
-    private String fValue;
-    private String fMethod;
+    private String value;
+
+    private String method;
 
     /**
      * Retrieves the path mapping URI (e.g. /customers).
@@ -34,7 +35,7 @@ public class RequestMappingParams {
      * @return path mapping URI
      */
     public String getValue() {
-        return fValue;
+        return value;
     }
 
     /**
@@ -43,7 +44,7 @@ public class RequestMappingParams {
      * @param value the path mapping URI
      */
     public void setValue(String value) {
-        fValue = value;
+        this.value = value;
     }
 
     /**
@@ -53,7 +54,7 @@ public class RequestMappingParams {
      * @return the HTTP request method
      */
     public String getMethod() {
-        return fMethod;
+        return method;
     }
 
     /**
@@ -62,15 +63,15 @@ public class RequestMappingParams {
      * @param method the HTTP request method
      */
     public void setMethod(String method) {
-        fMethod = method;
+        this.method = method;
     }
 
     @Override
     public String toString() {
         StringBuilder bldr = new StringBuilder(getClass().getName())
                 .append("[");
-        bldr.append("\n\tvalue: ").append(fValue).append("\n\tmethod: ")
-                .append(fMethod).append("]");
+        bldr.append("\n\tvalue: ").append(value).append("\n\tmethod: ")
+                .append(method).append("]");
 
         return bldr.toString();
     }

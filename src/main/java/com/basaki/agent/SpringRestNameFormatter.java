@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright [2017] [Indra Basak]
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ */
 
 package com.basaki.agent;
 
+import com.basaki.agent.util.ParserHelper;
+import com.basaki.agent.util.RestAnnotation;
 import com.wily.introscope.agent.IAgent;
-import com.wily.introscope.agent.trace.INameFormatter;
 import com.wily.introscope.agent.trace.InvocationData;
 import com.wily.util.StringUtils;
 import com.wily.util.feedback.IModuleFeedbackChannel;
@@ -25,13 +26,13 @@ import com.wily.util.feedback.IModuleFeedbackChannel;
  * <code>SpringRestNameFormatter</code> formats a metric path associated with a
  * Spring REST web service.
  * <pre>
- *  @Controller
+ *  &#064;Controller
  *  public class BookService {
- *      @RequestMapping(method = RequestMethod.GET, value = /books/{id},
+ *      &#064;RequestMapping(method = RequestMethod.GET, value = /books/{id},
  *      produces = {MediaType.APPLICATION_JSON_VALUE})
- *      @ResponseBody
+ *      &#064;ResponseBody
  *      public Book read(@ApiParam(value = "Book ID", required = true)
- *      @PathVariable("id") UUID id) {
+ *      &#064;PathVariable("id") UUID id) {
  *      return service.read(id);
  *      }
  *  }
@@ -62,18 +63,22 @@ import com.wily.util.feedback.IModuleFeedbackChannel;
  * @since Oct, 2014
  */
 @SuppressWarnings({"squid:S1226"})
-public class SpringRestNameFormatter implements INameFormatter {
+public class SpringRestNameFormatter extends BaseRestNameFormatter {
 
-    public static final String PATH_NAME_HOLDER = "{path}";
+    private static final String PATH_NAME_HOLDER = "{path}";
 
-    public static final String OP_NAME_HOLDER = "{op}";
+    private static final String OP_NAME_HOLDER = "{op}";
 
-    public static final String REQUEST_MAPPING_ANNOTATION =
+    private static final String CONTROLLER_ANNOTATION =
+            "org.springframework.stereotype.Controller";
+
+    private static final String REST_CONTROLLER_ANNOTATION =
+            "org.springframework.web.bind.annotation.RestController";
+
+    private static final String REQUEST_MAPPING_ANNOTATION =
             "org.springframework.web.bind.annotation.RequestMapping";
 
-    private IAgent fAgent;
-
-    private IModuleFeedbackChannel fFeedback;
+    private IModuleFeedbackChannel feedback;
 
     /**
      * Constructs a <code>SpringRestNameFormatter</code> which takes an agent as
@@ -82,8 +87,7 @@ public class SpringRestNameFormatter implements INameFormatter {
      * @param agent Java agent reference
      */
     public SpringRestNameFormatter(IAgent agent) {
-        fAgent = agent;
-        fFeedback = fAgent.IAgent_getModuleFeedback();
+        super(agent);
     }
 
     /**
@@ -97,106 +101,21 @@ public class SpringRestNameFormatter implements INameFormatter {
     public String INameFormatter_format(String name, InvocationData data) {
         String appName =
                 ParserHelper.getFrontendAppName(data.getFrontBoundary());
-        RequestMappingParams cntrlParams = null;
-        RequestMappingParams methodParams = null;
-        fFeedback.debug("INameFormatter_format app name: " + appName);
 
-        Class<?> invocationClass = data.getInvocationObject().getClass();
-        fFeedback.info("Invocation object " + invocationClass.getName());
+        String[] annotations =
+                {CONTROLLER_ANNOTATION, REST_CONTROLLER_ANNOTATION};
+        RestAnnotation ctrlAnno = findClassAnnotation(data, annotations);
+        RestAnnotation methodAnno =
+                findMethodAnnotation(data, REQUEST_MAPPING_ANNOTATION);
 
-        String annoStr = ParserHelper.findClassAnnotation(invocationClass,
-                REQUEST_MAPPING_ANNOTATION);
-        if (annoStr != null) {
-            fFeedback.info("INameFormatter_format cntrl req map: " + annoStr);
-            cntrlParams = ParserHelper.parseRequestMapping(annoStr);
-        }
-
-        methodParams = findMethodParams(data);
-
-        String path = getPath(appName, cntrlParams, methodParams);
+        String path = getPath(appName, ctrlAnno, methodAnno);
         name = StringUtils.replace(name, PATH_NAME_HOLDER, path);
 
-        String op = "noop";
-        if (methodParams != null && methodParams.getMethod() != null) {
-            op = methodParams.getMethod();
-        }
+        String value = getValue(methodAnno, "method");
+        String op = value != null ? value : "noop";
 
         name = StringUtils.replace(name, OP_NAME_HOLDER, op);
 
         return name;
-    }
-
-    /**
-     * Retrieves Spring Request Mapping annotation from the controller's invoked
-     * method
-     *
-     * @param data invocation data
-     * @return request mapping params object
-     */
-    private RequestMappingParams findMethodParams(InvocationData data) {
-        RequestMappingParams params = null;
-        Object invocationObj = data.getInvocationObject();
-
-        String methodName = data.getProbeInformation().getProbeIdentification()
-                .getProbeMethodName();
-
-        String methodDesc = data.getProbeInformation().getProbeIdentification()
-                .getProbeMethodDescriptor();
-
-        String annoStr =
-                ParserHelper.findMethodAnnotation(invocationObj.getClass(),
-                        methodName, methodDesc, REQUEST_MAPPING_ANNOTATION);
-        if (annoStr != null) {
-            params = ParserHelper.parseRequestMapping(annoStr);
-        }
-
-        return params;
-    }
-
-    /**
-     * Creates a path name from a front end application name, controller's
-     * request mapping annotation, and invoked method's request mapping
-     * annotation.
-     *
-     * @param appName      front end application name
-     * @param cntrlParams  controller's request mapping annotation
-     * @param methodParams invoked method's request mapping annotation
-     * @return valid path name if one of the parameter is not null, otherwise
-     * returns path name as 'nopath'
-     */
-    private String getPath(String appName, RequestMappingParams cntrlParams,
-            RequestMappingParams methodParams) {
-        String path = null;
-
-        if (appName != null) {
-            path = appName;
-        }
-
-        String cntrlMthdPath = null;
-        if (cntrlParams != null && cntrlParams.getValue() != null) {
-            cntrlMthdPath = cntrlParams.getValue();
-        }
-
-        if (methodParams != null && methodParams.getValue() != null) {
-            String suffix =
-                    methodParams.getValue().startsWith("/") ? methodParams
-                            .getValue() : ("/" + methodParams.getValue());
-            cntrlMthdPath = (cntrlMthdPath != null) ? (cntrlMthdPath + suffix)
-                    : suffix;
-        }
-
-        if (path != null && cntrlMthdPath != null) {
-            path += "|" + cntrlMthdPath;
-        } else if (path == null && cntrlMthdPath != null) {
-            path = cntrlMthdPath;
-        } else {
-            path = "nopath";
-        }
-
-        if (path != null) {
-            path = path.intern();
-        }
-
-        return path;
     }
 }
