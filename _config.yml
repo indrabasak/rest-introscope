@@ -1,1 +1,13 @@
 theme: jekyll-theme-midnight
+
+baseurl: /rest-introscope
+
+title: REST Introscope Agent Extension
+description: A Java Agent extension for JAX-RS and Spring REST metrics.
+
+author: Indra Basak
+
+#logo: ./images/logo-blue_40px.png
+#docs: https://github.com/indrabasak/patra/wiki
+#demo: ./demo/index.html
+blog: https://indrabasak.github.io
