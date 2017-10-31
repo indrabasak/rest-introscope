@@ -9,6 +9,16 @@ Introscope (CA APM) JAX-RS and Spring REST Java Agent Extension
 The `rest.pbd` and `Rest.jar` are used to instrument **Spring** and **JAX-RS** REST web services in **Introscope**.
 The `rest-client.pbd `is used for instrumenting Spring REST client to generate backend metrics and triage map.
 
+## Build
+You need [Maven](https://maven.apache.org/) to build the `Rest.jar`. Once you have Maven installed,
+yo can navigate to `rest-introscope` project folder and execute the following command,
+
+```
+mvn clean install
+```
+
+Once the build is successful, you will find the `Rest.jar` under `target` folder.
+
 ## Deployment
 Make the following changes to your Introscope agent after stopping the app/web server:
 
