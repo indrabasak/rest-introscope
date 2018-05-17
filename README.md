@@ -40,11 +40,11 @@ Make the following changes to your Introscope agent after stopping the app/web s
 [travis-badge]: https://travis-ci.org/indrabasak/rest-introscope.svg?branch=master
 [travis-badge-url]: https://travis-ci.org/indrabasak/rest-introscope
 
-[sonarqube-badge]: https://sonarcloud.io/api/badges/gate?key=com.basaki:rest-introscope
+[sonarqube-badge]: https://sonarcloud.io/api/project_badges/measure?project=com.basaki%3Arest-introscope&metric=alert_status
 [sonarqube-badge-url]: https://sonarcloud.io/dashboard/index/com.basaki:rest-introscope 
 
-[technical-debt-ratio-badge]: https://sonarcloud.io/api/badges/measure?key=com.basaki:rest-introscope&metric=sqale_debt_ratio
+[technical-debt-ratio-badge]: https://sonarcloud.io/api/project_badges/measure?project=com.basaki%3Arest-introscope&metric=sqale_index
 [technical-debt-ratio-badge-url]: https://sonarcloud.io/dashboard/index/com.basaki:rest-introscope 
 
-[coverage-badge]: https://sonarcloud.io/api/badges/measure?key=com.basaki:rest-introscope&metric=coverage
+[coverage-badge]: https://sonarcloud.io/api/project_badges/measure?project=com.basaki%3Arest-introscope&metric=coverage
 [coverage-badge-url]: https://sonarcloud.io/dashboard/index/com.basaki:rest-introscope
